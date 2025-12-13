@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Le Café Local - Menu</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&family=Open+Sans:wght@300;400;600&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <img src="M.A.Z.png" id="photo">
+                <h1>M.A.Z Coffee House</h1>
+            </div>
+            <nav class="navbar">
+                <ul class="nav-links">
+                    <li><a href="index.html">Accueil</a></li>
+                    <li><a href="menu.html" class="active">Menu</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                </ul>
+                <div class="hamburger" id="hamburger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main id="main-content">
+        <!-- Page menu -->
+        <div id="menu-page" class="page-content">
+            <section class="menu-section">
+                <div class="container">
+                    <h2>Notre Menu</h2>
+                    <p class="menu-description">Découvrez notre sélection de boissons et gourmandises préparées avec
+                        soin.</p>
+
+                    <!-- Filtres et tri -->
+                    <div class="menu-controls">
+                        <div class="filters">
+                            <button class="filter-btn active" data-category="all">Tout</button>
+                            <button class="filter-btn" data-category="boissons-chaudes">Boissons chaudes</button>
+                            <button class="filter-btn" data-category="boissons-froides">Boissons froides</button>
+                            <button class="filter-btn" data-category="patisseries">Pâtisseries</button>
+                            <button class="filter-btn" data-category="sandwiches">Sandwiches</button>
+                        </div>
+                        <div class="sort">
+                            <select id="sort-select">
+                                <option value="default">Trier par</option>
+                                <option value="price-asc">Prix croissant</option>
+                                <option value="price-desc">Prix décroissant</option>
+                                <option value="popularity">Popularité</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Conteneur des produits -->
+                    <div class="products-container" id="products-container">
+                        <!-- Les produits seront générés par JavaScript -->
+                    </div>
+
+                    <!-- Panier et facture -->
+                    <div class="order-summary">
+                        <h3>Votre commande</h3>
+                        <div class="cart-container">
+                            <div class="cart-items" id="cart-items">
+                                <p class="empty-cart">Votre panier est vide</p>
+                            </div>
+                            <div class="cart-summary">
+                                <div class="total">
+                                    <span>Total:</span>
+                                    <span id="cart-total">0.00 €</span>
+                                </div>
+                                <button class="checkout-btn" id="checkout-btn">Commander</button>
+                                <button class="clear-btn" id="clear-btn">Vider le panier</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-column">
+                    <h3>Le Café Local</h3>
+                    <p>Un lieu chaleureux pour déguster des boissons et pâtisseries de qualité.</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                    </div>
+                </div>
+                <div class="footer-column">
+                    <h3>Horaires d'ouverture</h3>
+                    <ul>
+                        <li>Lundi - Vendredi: 7h30 - 20h</li>
+                        <li>Samedi: 8h - 21h</li>
+                        <li>Dimanche: 9h - 18h</li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Contact</h3>
+                    <ul>
+                        <li><i class="fas fa-map-marker-alt"></i> 123 Rue du Café, 75000 sousse</li>
+                        <li><i class="fas fa-phone"></i> 01 23 45 67 89</li>
+                        <li><i class="fas fa-envelope"></i> contact@MAZ.com</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2025 Le Café Local. Tous droits réservés.</p>
+                <p>Projet académique - Polytech Sousse 2025-2026</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>

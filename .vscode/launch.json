@@ -2,24 +2,17 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "type": "chrome",
-            "request": "launch",
             "name": "Launch Chrome",
-            "url": "http://localhost:3000",
-            "runtimeExecutable": "C:\\Program Files\\Google\\Chrome\\Application\\chrome1.exe"
+            "request": "launch",
+            "type": "pwa-chrome",
+            "url": "http://localhost:8080",
+            "webRoot": "${workspaceFolder}"
         },
         {
-            "type": "chrome",
-            "request": "launch",
             "name": "Open index.html",
-            "file": "c:\\Users\\DELL\\Desktop\\proj\\index.html",
-            "runtimeExecutable": "C:\\Program Files\\Google\\Chrome\\Application\\chrome1.exe"
-        },
-        {
-            "type": "node",
             "request": "launch",
-            "name": "Run server",
-            "program": "${workspaceFolder}/index.js"
+            "type": "pwa-chrome",
+            "file": "C:\\Users\\msi\\Desktop\\Proj\\index.htmL"
         }
     ]
 }

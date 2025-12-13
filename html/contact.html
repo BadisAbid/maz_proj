@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Le Café Local - Contact</title>
+    <title>M.A.Z Coffee House - Contact</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
         href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&family=Open+Sans:wght@300;400;600&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="../css/styles.css">
 </head>
 
 <body>
@@ -18,7 +18,9 @@
     <header class="header">
         <div class="container">
             <div class="logo">
-                <img src="M.A.Z.png" id="photo">
+                <a href="index.html">
+                <img src="../img/M.A.Z.png" id="photo" alt="Logo M.A.Z Coffee House">
+            </a>
                 <h1>M.A.Z Coffee House</h1>
             </div>
             <nav class="navbar">
@@ -26,6 +28,11 @@
                     <li><a href="index.html">Accueil</a></li>
                     <li><a href="menu.html">Menu</a></li>
                     <li><a href="contact.html" class="active">Contact</a></li>
+                    <!-- ICÔNE PANIER AJOUTÉE -->
+                    <li class="cart-icon-container" id="cart-nav">
+                        <i class="fas fa-shopping-basket cart-icon"></i>
+                        <span class="cart-badge hidden" id="cart-count">0</span>
+                    </li>
                 </ul>
                 <div class="hamburger" id="hamburger">
                     <span></span>
@@ -85,16 +92,16 @@
                                 <i class="fas fa-map-marked-alt"
                                     style="font-size: 3rem; margin-bottom: 15px; color: #8B4513;"></i>
                                 <p>Carte interactive</p>
-                                <p>123 Rue du Café, 75000 Paris</p>
+                                <p>123 Rue du Café, 75000 Sousse</p>
                             </div>
                         </div>
 
                         <div class="contact-info">
                             <h4>Informations de contact</h4>
                             <ul>
-                                <li><i class="fas fa-map-marker-alt"></i> 123 Rue du Café, 75000 Paris</li>
+                                <li><i class="fas fa-map-marker-alt"></i> 123 Rue du Café, 75000 Sousse</li>
                                 <li><i class="fas fa-phone"></i> 01 23 45 67 89</li>
-                                <li><i class="fas fa-envelope"></i> contact@lecafelocal.fr</li>
+                                <li><i class="fas fa-envelope"></i> contact@mazcoffee.com</li>
                                 <li><i class="fas fa-clock"></i> Lun-Ven: 7h30-20h, Sam: 8h-21h, Dim: 9h-18h</li>
                             </ul>
                         </div>
@@ -109,7 +116,7 @@
         <div class="container">
             <div class="footer-grid">
                 <div class="footer-column">
-                    <h3>Le Café Local</h3>
+                    <h3>M.A.Z Coffee House</h3>
                     <p>Un lieu chaleureux pour déguster des boissons et pâtisseries de qualité.</p>
                     <div class="social-links">
                         <a href="#"><i class="fab fa-facebook"></i></a>
@@ -128,19 +135,20 @@
                 <div class="footer-column">
                     <h3>Contact</h3>
                     <ul>
-                        <li><i class="fas fa-map-marker-alt"></i> 123 Rue du Café, 75000 sousse</li>
+                        <li><i class="fas fa-map-marker-alt"></i> 123 Rue du Café, 75000 Sousse</li>
                         <li><i class="fas fa-phone"></i> 01 23 45 67 89</li>
-                        <li><i class="fas fa-envelope"></i> contact@MAZ.com</li>
+                        <li><i class="fas fa-envelope"></i> contact@mazcoffee.com</li>
                     </ul>
                 </div>
             </div>
             <div class="copyright">
-                <p>&copy; 2025 Le Café Local. Tous droits réservés.</p>
+                <p>&copy; 2025 M.A.Z Coffee House. Tous droits réservés.</p>
                 <p>Projet académique - Polytech Sousse 2025-2026</p>
             </div>
         </div>
     </footer>
 
-    <script src="app.js"></script>
+    <script src="../js/shared.js"></script>
+    <script src="../js/contact.js"></script>
 </body>
 </html>

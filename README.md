@@ -3,9 +3,9 @@
 Site web moderne pour un café local avec système de panier interactif.
 
 ## 👥 Équipe
-- **Mohamed Aziz ZORMATI** - Développeur Frontend & Design
-- **Badis ABID** - Développeur JavaScript & Fonctionnalités
-- **Haythem MIGHRI** - Intégration & Responsive Design
+- **Mohamed Aziz ZORMATI** - 
+- **Badis ABID** - 
+- **Haythem MIGHRI** - 
 
 ## 🚀 Fonctionnalités
 

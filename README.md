@@ -38,4 +38,4 @@ Site web moderne pour un café local avec système de panier interactif.
 - **Google Fonts** - Typographie
 - **Unsplash** - Images de qualité
 
-## 📁 Structure du projet
+

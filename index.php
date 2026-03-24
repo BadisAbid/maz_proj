@@ -1,3 +1,7 @@
+<?php
+// index.php
+
+?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -6,44 +10,55 @@
     <title>Le Café Local - Accueil</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&family=Open+Sans:wght@300;400;600&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&family=Open+Sans:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/filter-styles.css">
+    <style>
+        .dynamic-products-section {
+            padding: 40px 0;
+            background-color: #f9f9f9;
+        }
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+    </style>
 </head>
 
 <body>
     <!-- Header avec icône panier -->
-    <!-- Header avec icône panier -->
-<header class="header">
-    <div class="container">
-        <div class="logo">
-            <!-- AJOUT DU LIEN AUTOUR DE L'IMAGE -->
-            <a href="index.html">
-                <img src="../img/M.A.Z.png" id="photo" alt="Logo M.A.Z Coffee House">
-            </a>
-            <h1>M.A.Z Coffee House</h1>
-        </div>
-        <nav class="navbar">
-            <ul class="nav-links">
-                <li><a href="index.html" class="active">Accueil</a></li>
-                <li><a href="menu.html">Menu</a></li>
-                <li><a href="contact.html">Contact</a></li>
-                <!-- ICÔNE PANIER AJOUTÉE -->
-                <li class="cart-icon-container" id="cart-nav">
-                    <i class="fas fa-shopping-basket cart-icon"></i>
-                    <span class="cart-badge hidden" id="cart-count">0</span>
-                </li>
-            </ul>
-            <div class="hamburger" id="hamburger">
-                <span></span>
-                <span></span>
-                <span></span>
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <a href="index.php">
+                    <img src="img/M.A.Z.png" id="photo" alt="Logo M.A.Z Coffee House">
+                </a>
+                <h1>M.A.Z Coffee House</h1>
             </div>
-        </nav>
-    </div>
-</header>
+            <nav class="navbar">
+                <ul class="nav-links">
+                    <li><a href="index.php" class="active">Accueil</a></li>
+                    <li><a href="menu.php">Menu</a></li>
+                    <li><a href="contact.php">Contact</a></li>
+                    <!-- Ajout du lien vers Admin -->
+                    <li><a href="admin.php">Admin</a></li>
+                    
+                    <li class="cart-icon-container" id="cart-nav">
+                        <i class="fas fa-shopping-basket cart-icon"></i>
+                        <span class="cart-badge hidden" id="cart-count">0</span>
+                    </li>
+                </ul>
+                <div class="hamburger" id="hamburger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </nav>
+        </div>
+    </header>
 
     <!-- Main Content -->
     <main id="main-content">
@@ -56,18 +71,22 @@
                         <p>Un café d'exception dans un cadre chaleureux</p>
                     </div>
                 </div>
+                <!-- SLIDE 2 -->
                 <div class="slide">
                     <div class="slide-content">
-                        <h2>Nos pâtisseries faites maison</h2>
-                        <p>Des douceurs préparées quotidiennement</p>
+                        <h2>Des arômes qui éveillent les sens</h2>
+                        <p>Dégustez notre sélection de cafés torréfiés sur place</p>
                     </div>
                 </div>
+                <!-- SLIDE 3 -->
                 <div class="slide">
                     <div class="slide-content">
-                        <h2>Des produits locaux de qualité</h2>
-                        <p>Nous soutenons les producteurs de la région</p>
+                        <h2>Une expérience gourmande Inoubliable</h2>
+                        <p>Accompagnez votre boisson de nos pâtisseries faites maison</p>
                     </div>
                 </div>
+                
+                <!-- BOUTONS DE NAVIGATION DU SLIDER -->
                 <div class="dots-container">
                     <span class="dot active" data-index="0"></span>
                     <span class="dot" data-index="1"></span>
@@ -104,20 +123,17 @@
                     <div class="value-card">
                         <i class="fas fa-seedling"></i>
                         <h3>Produits locaux</h3>
-                        <p>Nous travaillons avec des producteurs locaux pour vous offrir des produits frais et de
-                            saison.</p>
+                        <p>Nous travaillons avec des producteurs locaux pour vous offrir des produits frais et de saison.</p>
                     </div>
                     <div class="value-card">
                         <i class="fas fa-heart"></i>
                         <h3>Service amical</h3>
-                        <p>Notre équipe est toujours souriante et à l'écoute pour vous offrir la meilleure
-                            expérience.</p>
+                        <p>Notre équipe est toujours souriante et à l'écoute pour vous offrir la meilleure expérience.</p>
                     </div>
                     <div class="value-card">
                         <i class="fas fa-users"></i>
                         <h3>Ambiance conviviale</h3>
-                        <p>Notre espace est conçu pour être accueillant et chaleureux, un vrai lieu de vie du
-                            quartier.</p>
+                        <p>Notre espace est conçu pour être accueillant et chaleureux, un vrai lieu de vie du quartier.</p>
                     </div>
                 </div>
             </div>
@@ -129,10 +145,12 @@
                 <div class="order-content">
                     <h2>Découvrez nos délices</h2>
                     <p>Explorez notre menu varié de boissons chaudes, pâtisseries maison et sandwiches gourmands.</p>
-                    <button class="cta-button" id="cta-button">Découvrez notre menu</button>
                 </div>
             </div>
         </section>
+
+
+
     </main>
 
     <!-- Footer -->
@@ -172,35 +190,8 @@
         </div>
     </footer>
 
-    <!-- PANNEAU PANIER COULISSANT (UNIQUEMENT SUR LA PAGE D'ACCUEIL) -->
-    <div class="cart-overlay" id="cart-overlay"></div>
-    <div class="cart-panel" id="cart-panel">
-        <div class="cart-header">
-            <h2><i class="fas fa-shopping-basket"></i> Mon Panier</h2>
-            <button class="close-cart" id="close-cart">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-        
-        <div class="cart-body" id="cart-body">
-            <!-- Le contenu du panier sera injecté ici par JavaScript -->
-        </div>
-
-        <div class="cart-footer">
-            <div class="cart-total">
-                <span>Total:</span>
-                <span class="cart-total-amount" id="cart-total-amount">0.00 €</span>
-            </div>
-            <button class="checkout-button" id="checkout-button">
-                <i class="fas fa-credit-card"></i> Commander
-            </button>
-            <button class="clear-cart-button" id="clear-cart-button">
-                <i class="fas fa-trash"></i> Vider le panier
-            </button>
-        </div>
-    </div>
-
-    <script src="../js/shared.js"></script>
-    <script src="../js/index.js"></script>
+    <!-- Scripts -->
+    <script src="js/shared.js"></script>
+    <script src="js/index.js"></script>
 </body>
 </html>

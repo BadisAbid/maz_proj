@@ -3,7 +3,7 @@ let cart = [];
 let slideInterval;
 
 // ===== DONNÉES DES PRODUITS =====
-const products = [
+var products = [
     {
         id: 1,
         name: "Expresso",

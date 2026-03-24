@@ -10,7 +10,7 @@
         href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&family=Open+Sans:wght@300;400;600&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="css/styles.css">
 </head>
 
 <body>
@@ -18,16 +18,17 @@
     <header class="header">
         <div class="container">
             <div class="logo">
-                <a href="index.html">
-                <img src="../img/M.A.Z.png" id="photo" alt="Logo M.A.Z Coffee House">
+                <a href="index.php">
+                <img src="img/M.A.Z.png" id="photo" alt="Logo M.A.Z Coffee House">
             </a>
                 <h1>M.A.Z Coffee House</h1>
             </div>
             <nav class="navbar">
                 <ul class="nav-links">
-                    <li><a href="index.html">Accueil</a></li>
-                    <li><a href="menu.html">Menu</a></li>
-                    <li><a href="contact.html" class="active">Contact</a></li>
+                    <li><a href="index.php">Accueil</a></li>
+                    <li><a href="menu.php">Menu</a></li>
+                    <li><a href="contact.php" class="active">Contact</a></li>
+                    <li><a href="admin.php">Admin</a></li>
                     <!-- ICÔNE PANIER AJOUTÉE -->
                     <li class="cart-icon-container" id="cart-nav">
                         <i class="fas fa-shopping-basket cart-icon"></i>
@@ -148,7 +149,7 @@
         </div>
     </footer>
 
-    <script src="../js/shared.js"></script>
-    <script src="../js/contact.js"></script>
+    <script src="js/shared.js"></script>
+    <script src="js/contact.js"></script>
 </body>
 </html>

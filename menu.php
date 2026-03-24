@@ -1,3 +1,16 @@
+<?php
+include 'db.php';
+$query = "SELECT * FROM products ORDER BY id DESC";
+$result = mysqli_query($conn, $query);
+$db_products = [];
+while ($row = mysqli_fetch_assoc($result)) {
+    $row['price'] = (float) $row['price'];
+    $row['id'] = (int) $row['id'];
+    $row['popularity'] = 50; 
+    $row['image'] = empty($row['image']) ? 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=400' : 'images/' . $row['image'];
+    $db_products[] = $row;
+}
+?>
 <!DOCTYPE html>
 <html lang="fr">
   <head>
@@ -14,8 +27,8 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
     />
-    <link rel="stylesheet" href="../css/styles.css" />
-    <link rel="stylesheet" href="../css/filter-styles.css" />
+    <link rel="stylesheet" href="css/styles.css" />
+    <link rel="stylesheet" href="css/filter-styles.css" />
   </head>
 
   <body>
@@ -23,16 +36,17 @@
     <header class="header">
       <div class="container">
         <div class="logo">
-          <a href="index.html">
-                <img src="../img/M.A.Z.png" id="photo" alt="Logo M.A.Z Coffee House">
+          <a href="index.php">
+                <img src="img/M.A.Z.png" id="photo" alt="Logo M.A.Z Coffee House">
             </a>
           <h1>M.A.Z Coffee House</h1>
         </div>
         <nav class="navbar">
           <ul class="nav-links">
-            <li><a href="index.html">Accueil</a></li>
-            <li><a href="menu.html" class="active">Menu</a></li>
-            <li><a href="contact.html">Contact</a></li>
+            <li><a href="index.php">Accueil</a></li>
+            <li><a href="menu.php" class="active">Menu</a></li>
+            <li><a href="contact.php">Contact</a></li>
+            <li><a href="admin.php">Admin</a></li>
             <!-- ICÔNE PANIER AJOUTÉE -->
             <li class="cart-icon-container" id="cart-nav">
               <i class="fas fa-shopping-basket cart-icon"></i>
@@ -253,7 +267,11 @@
       </div>
     </div>
 
-    <script src="../js/shared.js"></script>
-    <script src="../js/menu.js"></script>
+    <script src="js/shared.js"></script>
+    <script>
+        // Override the static products with the database products
+        products = <?php echo json_encode($db_products); ?>;
+    </script>
+    <script src="js/menu.js"></script>
   </body>
 </html>

@@ -4,7 +4,7 @@ Site web moderne pour un café local avec système de panier interactif.
 
 ## 👥 Équipe
 - **Mohamed Aziz ZORMATI** - 
-- **Badis ABID** - 
+- **Mohamed Badis ABID** - 
 - **Haythem MIGHRI** - 
 
 ## 🚀 Fonctionnalités

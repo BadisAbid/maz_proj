@@ -1,3 +1,4 @@
+<?php session_start(); ?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -10,7 +11,7 @@
         href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&family=Open+Sans:wght@300;400;600&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/styles.css?v=2.0">
 </head>
 
 <body>
@@ -25,12 +26,26 @@
             </div>
             <nav class="navbar">
                 <ul class="nav-links">
-                    <li><a href="index.php">Accueil</a></li>
-                    <li><a href="menu.php">Menu</a></li>
-                    <li><a href="contact.php" class="active">Contact</a></li>
-                    <li><a href="admin.php">Admin</a></li>
+                    <li><a href="index.php" class="<?php echo (basename($_SERVER['PHP_SELF']) == 'index.php') ? 'active' : ''; ?>">Accueil</a></li>
+                    <li><a href="menu.php" class="<?php echo (basename($_SERVER['PHP_SELF']) == 'menu.php') ? 'active' : ''; ?>">Menu</a></li>
+                    <li><a href="contact.php" class="<?php echo (basename($_SERVER['PHP_SELF']) == 'contact.php') ? 'active' : ''; ?>">Contact</a></li>
+                    
+                    <?php if (isset($_SESSION['user_id'])): ?>
+                        <?php if ($_SESSION['role'] === 'admin'): ?>
+                            <li><a href="admin.php">Admin</a></li>
+                        <?php endif; ?>
+                        <li><a href="logout.php" class="nav-auth-btn" title="Déconnexion"><i class="fas fa-sign-out-alt"></i> Déconnexion</a></li>
+                    <?php else: ?>
+                        <li>
+                            <div class="navbar-pill-toggle">
+                                <a href="auth.php?mode=login" class="<?php echo (!isset($_GET['mode']) || $_GET['mode'] == 'login') ? 'active' : ''; ?>">Connexion</a>
+                                <a href="auth.php?mode=signup" class="<?php echo (isset($_GET['mode']) && $_GET['mode'] == 'signup') ? 'active' : ''; ?>">Inscription</a>
+                            </div>
+                        </li>
+                    <?php endif; ?>
+                    
                     <!-- ICÔNE PANIER AJOUTÉE -->
-                    <li class="cart-icon-container" id="cart-nav">
+                    <li class="cart-icon-container" id="cart-nav" style="margin-left: 15px;">
                         <i class="fas fa-shopping-basket cart-icon"></i>
                         <span class="cart-badge hidden" id="cart-count">0</span>
                     </li>
@@ -88,13 +103,14 @@
                     <div class="map-container">
                         <h3>Où nous trouver</h3>
                         <div id="map">
-                            <!-- Carte Google Maps simulée -->
-                            <div style="text-align: center;">
-                                <i class="fas fa-map-marked-alt"
-                                    style="font-size: 3rem; margin-bottom: 15px; color: #8B4513;"></i>
-                                <p>Carte interactive</p>
-                                <p>123 Rue du Café, 75000 Sousse</p>
-                            </div>
+                            <iframe 
+                                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d51737.56157077884!2d10.584347573618395!3d35.83424195191599!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x130275759ac9d16d%3A0x6790906dc266e7!2sSousse!5e0!3m2!1sfr!2stn!4v1712060000000!5m2!1sfr!2stn" 
+                                width="100%" 
+                                height="100%" 
+                                style="border:0;" 
+                                allowfullscreen="" 
+                                loading="lazy">
+                            </iframe>
                         </div>
 
                         <div class="contact-info">
@@ -113,41 +129,7 @@
     </main>
 
     <!-- Footer -->
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-grid">
-                <div class="footer-column">
-                    <h3>M.A.Z Coffee House</h3>
-                    <p>Un lieu chaleureux pour déguster des boissons et pâtisseries de qualité.</p>
-                    <div class="social-links">
-                        <a href="#"><i class="fab fa-facebook"></i></a>
-                        <a href="#"><i class="fab fa-instagram"></i></a>
-                        <a href="#"><i class="fab fa-twitter"></i></a>
-                    </div>
-                </div>
-                <div class="footer-column">
-                    <h3>Horaires d'ouverture</h3>
-                    <ul>
-                        <li>Lundi - Vendredi: 7h30 - 20h</li>
-                        <li>Samedi: 8h - 21h</li>
-                        <li>Dimanche: 9h - 18h</li>
-                    </ul>
-                </div>
-                <div class="footer-column">
-                    <h3>Contact</h3>
-                    <ul>
-                        <li><i class="fas fa-map-marker-alt"></i> 123 Rue du Café, 75000 Sousse</li>
-                        <li><i class="fas fa-phone"></i> 01 23 45 67 89</li>
-                        <li><i class="fas fa-envelope"></i> contact@mazcoffee.com</li>
-                    </ul>
-                </div>
-            </div>
-            <div class="copyright">
-                <p>&copy; 2025 M.A.Z Coffee House. Tous droits réservés.</p>
-                <p>Projet académique - Polytech Sousse 2025-2026</p>
-            </div>
-        </div>
-    </footer>
+    <?php include 'footer.php'; ?>
 
     <script src="js/shared.js"></script>
     <script src="js/contact.js"></script>

@@ -1,4 +1,7 @@
 <?php
+session_start();
+require_once 'auth_check.php';
+confirmAdmin();
 // insert.php
 include 'db.php';
 
@@ -37,9 +40,9 @@ if (isset($_POST['submit'])) {
 
     // Insert Product into database
     $query = "INSERT INTO products (name, image, category, description, price) VALUES ('$name', '$newImageName', '$category', '$description', '$price')";
-    
+
     if (mysqli_query($conn, $query)) {
-        header("Location: admin.php?msg=" . urlencode("Le produit a été ajouté avec succès."));
+        header("Location: products_list.php?msg=" . urlencode("Le produit a été ajouté avec succès."));
     } else {
         header("Location: admin.php?err=" . urlencode("Erreur lors de l'ajout: " . mysqli_error($conn)));
     }

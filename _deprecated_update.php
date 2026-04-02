@@ -1,6 +1,9 @@
 <?php
-// update.php
+session_start();
 include 'db.php';
+require_once 'auth_check.php';
+confirmAdmin();
+// update.php
 
 // Handle form submission for update
 if (isset($_POST['update'])) {
@@ -36,7 +39,7 @@ if (isset($_POST['update'])) {
             // Update with image
             $query = "UPDATE products SET name='$name', image='$newImageName', category='$category', description='$description', price='$price' WHERE id=$id";
         } else {
-            header("Location: admin.php?err=" . urlencode("Seules les images JPG, JPEG, PNG, GIF, WEBP sont autorisées."));
+            header("Location: products_list.php?err=" . urlencode("Seules les images JPG, JPEG, PNG, GIF, WEBP sont autorisées."));
             exit;
         }
     } else {
@@ -45,9 +48,9 @@ if (isset($_POST['update'])) {
     }
     
     if (mysqli_query($conn, $query)) {
-        header("Location: admin.php?msg=" . urlencode("Le produit a été mis à jour."));
+        header("Location: products_list.php?msg=" . urlencode("Le produit a été mis à jour."));
     } else {
-        header("Location: admin.php?err=" . urlencode("Erreur lors de la mise à jour: " . mysqli_error($conn)));
+        header("Location: products_list.php?err=" . urlencode("Erreur lors de la mise à jour: " . mysqli_error($conn)));
     }
     exit;
 }
@@ -61,28 +64,28 @@ if (isset($_GET['id'])) {
     if (mysqli_num_rows($result) > 0) {
         $product = mysqli_fetch_assoc($result);
     } else {
-        header("Location: admin.php?err=" . urlencode("Produit introuvable."));
+        header("Location: products_list.php?err=" . urlencode("Produit introuvable."));
         exit;
     }
 } else {
-    header("Location: admin.php");
+    header("Location: products_list.php");
     exit;
 }
 ?>
 <!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <title>Modifier un Produit - Admin Panel</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&family=Open+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="css/styles.css">
     <style>
         :root {
             --primary-color: #8B4513;
             --secondary-color: #D4A76A;
         }
-        body { font-family: 'Open Sans', sans-serif; background-color: #f9f5f0; margin: 0; padding: 0; }
-        .container { max-width: 800px; margin: 60px auto; background: #fff; padding: 40px; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
-        h2 { margin-bottom: 30px; color: var(--primary-color); border-bottom: 2px solid var(--secondary-color); padding-bottom: 15px; font-family: 'Roboto', sans-serif; font-size: 2rem; }
+        .admin-section { padding: 40px 0; min-height: 80vh; }
+        .admin-card { background: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); margin-bottom: 40px; }
+        .admin-card h2 { color: var(--primary-color); margin-bottom: 25px; border-bottom: 2px solid var(--secondary-color); padding-bottom: 10px; }
         .form-group { margin-bottom: 20px; }
         .form-group label { display: block; margin-bottom: 8px; font-weight: 600; color: #444; }
         .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-family: inherit; font-size: 1rem; transition: border-color 0.3s; }
@@ -96,7 +99,26 @@ if (isset($_GET['id'])) {
     </style>
 </head>
 <body>
-    <div class="container">
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <a href="index.php"><img src="img/M.A.Z.png" id="photo" alt="Logo M.A.Z Coffee House"></a>
+                <h1>Admin Panel</h1>
+            </div>
+            <nav class="navbar">
+                <ul class="nav-links">
+                    <li><a href="index.php">Aller au Site</a></li>
+                    <li><a href="admin.php" class="<?php echo (basename($_SERVER['PHP_SELF']) == 'admin.php') ? 'active' : ''; ?>">Ajouter Produit</a></li>
+                    <li><a href="products_list.php" class="<?php echo (basename($_SERVER['PHP_SELF']) == 'products_list.php') ? 'active' : ''; ?>">Tous les produits</a></li>
+                    <li><a href="admin_messages.php" class="<?php echo (basename($_SERVER['PHP_SELF']) == 'admin_messages.php') ? 'active' : ''; ?>">Messages</a></li>
+                    <li><a href="logout.php" class="nav-auth-btn" style="color: #e74c3c !important;"><i class="fas fa-sign-out-alt"></i> Déconnexion</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="admin-section container">
+        <div class="admin-card">
         <h2>Modifier le produit</h2>
         <form action="update.php" method="POST" enctype="multipart/form-data">
             <input type="hidden" name="id" value="<?php echo $product['id']; ?>">
@@ -136,8 +158,11 @@ if (isset($_GET['id'])) {
             </div>
 
             <button type="submit" name="update" class="btn-submit">Mettre à jour</button>
-            <a href="admin.php" class="btn-cancel">Annuler</a>
+            <a href="products_list.php" class="btn-cancel">Annuler</a>
         </form>
-    </div>
+        </div>
+    </main>
+
+    <?php include 'footer.php'; ?>
 </body>
 </html>

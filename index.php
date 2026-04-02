@@ -1,4 +1,5 @@
 <?php
+session_start();
 // index.php
 
 ?>
@@ -12,7 +13,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&family=Open+Sans:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/styles.css?v=2.0">
     <link rel="stylesheet" href="css/filter-styles.css">
     <style>
         .dynamic-products-section {
@@ -40,13 +41,25 @@
             </div>
             <nav class="navbar">
                 <ul class="nav-links">
-                    <li><a href="index.php" class="active">Accueil</a></li>
-                    <li><a href="menu.php">Menu</a></li>
-                    <li><a href="contact.php">Contact</a></li>
-                    <!-- Ajout du lien vers Admin -->
-                    <li><a href="admin.php">Admin</a></li>
+                    <li><a href="index.php" class="<?php echo (basename($_SERVER['PHP_SELF']) == 'index.php') ? 'active' : ''; ?>">Accueil</a></li>
+                    <li><a href="menu.php" class="<?php echo (basename($_SERVER['PHP_SELF']) == 'menu.php') ? 'active' : ''; ?>">Menu</a></li>
+                    <li><a href="contact.php" class="<?php echo (basename($_SERVER['PHP_SELF']) == 'contact.php') ? 'active' : ''; ?>">Contact</a></li>
                     
-                    <li class="cart-icon-container" id="cart-nav">
+                    <?php if (isset($_SESSION['user_id'])): ?>
+                        <?php if ($_SESSION['role'] === 'admin'): ?>
+                            <li><a href="admin.php">Admin</a></li>
+                        <?php endif; ?>
+                        <li><a href="logout.php" class="nav-auth-btn" title="Déconnexion"><i class="fas fa-sign-out-alt"></i> Déconnexion</a></li>
+                    <?php else: ?>
+                        <li>
+                            <div class="navbar-pill-toggle">
+                                <a href="auth.php?mode=login" class="<?php echo (!isset($_GET['mode']) || $_GET['mode'] == 'login') ? 'active' : ''; ?>">Connexion</a>
+                                <a href="auth.php?mode=signup" class="<?php echo (isset($_GET['mode']) && $_GET['mode'] == 'signup') ? 'active' : ''; ?>">Inscription</a>
+                            </div>
+                        </li>
+                    <?php endif; ?>
+                    
+                    <li class="cart-icon-container" id="cart-nav" style="margin-left: 15px;">
                         <i class="fas fa-shopping-basket cart-icon"></i>
                         <span class="cart-badge hidden" id="cart-count">0</span>
                     </li>
@@ -154,41 +167,7 @@
     </main>
 
     <!-- Footer -->
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-grid">
-                <div class="footer-column">
-                    <h3>M.A.Z Coffee House</h3>
-                    <p>Un lieu chaleureux pour déguster des boissons et pâtisseries de qualité.</p>
-                    <div class="social-links">
-                        <a href="#"><i class="fab fa-facebook"></i></a>
-                        <a href="#"><i class="fab fa-instagram"></i></a>
-                        <a href="#"><i class="fab fa-twitter"></i></a>
-                    </div>
-                </div>
-                <div class="footer-column">
-                    <h3>Horaires d'ouverture</h3>
-                    <ul>
-                        <li>Lundi - Vendredi: 7h30 - 20h</li>
-                        <li>Samedi: 8h - 21h</li>
-                        <li>Dimanche: 9h - 18h</li>
-                    </ul>
-                </div>
-                <div class="footer-column">
-                    <h3>Contact</h3>
-                    <ul>
-                        <li><i class="fas fa-map-marker-alt"></i> 123 Rue du Café, 75000 Sousse</li>
-                        <li><i class="fas fa-phone"></i> 01 23 45 67 89</li>
-                        <li><i class="fas fa-envelope"></i> contact@mazcoffee.com</li>
-                    </ul>
-                </div>
-            </div>
-            <div class="copyright">
-                <p>&copy; 2025 M.A.Z Coffee House. Tous droits réservés.</p>
-                <p>Projet académique - Polytech Sousse 2025-2026</p>
-            </div>
-        </div>
-    </footer>
+    <?php include 'footer.php'; ?>
 
     <!-- Scripts -->
     <script src="js/shared.js"></script>

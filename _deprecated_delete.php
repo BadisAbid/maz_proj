@@ -1,4 +1,7 @@
 <?php
+session_start();
+require_once 'auth_check.php';
+confirmAdmin();
 // delete.php
 include 'db.php';
 
@@ -20,14 +23,14 @@ if (isset($_GET['id'])) {
             if (!empty($row['image']) && file_exists($imagePath)) {
                 unlink($imagePath);
             }
-            header("Location: admin.php?msg=" . urlencode("Le produit a été supprimé."));
+            header("Location: products_list.php?msg=" . urlencode("Le produit a été supprimé."));
         } else {
-            header("Location: admin.php?err=" . urlencode("Erreur lors de la suppression: " . mysqli_error($conn)));
+            header("Location: products_list.php?err=" . urlencode("Erreur lors de la suppression: " . mysqli_error($conn)));
         }
     } else {
-        header("Location: admin.php?err=" . urlencode("Produit introuvable."));
+        header("Location: products_list.php?err=" . urlencode("Produit introuvable."));
     }
 } else {
-    header("Location: admin.php");
+    header("Location: products_list.php");
 }
 ?>

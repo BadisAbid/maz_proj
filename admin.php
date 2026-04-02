@@ -1,91 +1,278 @@
 <?php
-// admin.php
-include 'db.php';
+session_start();
+include_once 'db.php';
+require_once 'auth_check.php';
+require_once 'auth_logic.php';
 
-// Fetch all products
-$query = "SELECT * FROM products ORDER BY id DESC";
-$result = mysqli_query($conn, $query);
+// --- LOGIC HANDLERS ---
+
+// 1. Handle Admin Login
+if (isset($_POST['admin_login'])) {
+    $email = $_POST['email'];
+    $password = $_POST['password'];
+    $role = loginUser($email, $password);
+    
+    if ($role === 'admin') {
+        header("Location: admin.php");
+        exit;
+    } else {
+        $error = "Accès refusé ou identifiants incorrects.";
+    }
+}
+
+// 2. Handle Add Product
+if (isset($_POST['add_product']) && isAdminLoggedIn()) {
+    $name = mysqli_real_escape_string($conn, $_POST['name']);
+    $category = mysqli_real_escape_string($conn, $_POST['category']);
+    $price = $_POST['price'];
+    $description = mysqli_real_escape_string($conn, $_POST['description']);
+    
+    $imageFile = $_FILES['image']['name'];
+    $newImageName = '';
+
+    if ($imageFile) {
+        $uploadDir = 'images/';
+        $imageExt = strtolower(pathinfo($imageFile, PATHINFO_EXTENSION));
+        $newImageName = time() . '_' . rand(1000, 9999) . '.' . $imageExt;
+        move_uploaded_file($_FILES['image']['tmp_name'], $uploadDir . $newImageName);
+    }
+
+    $query = "INSERT INTO products (name, image, category, description, price) VALUES ('$name', '$newImageName', '$category', '$description', '$price')";
+    if (mysqli_query($conn, $query)) {
+        header("Location: admin.php?msg=Produit ajouté !");
+        exit;
+    } else {
+        $error = "Erreur: " . mysqli_error($conn);
+    }
+}
+
+// 3. Handle Update Product
+if (isset($_POST['update_product']) && isAdminLoggedIn()) {
+    $id = intval($_POST['id']);
+    $name = mysqli_real_escape_string($conn, $_POST['name']);
+    $category = mysqli_real_escape_string($conn, $_POST['category']);
+    $price = $_POST['price'];
+    $description = mysqli_real_escape_string($conn, $_POST['description']);
+    
+    $imageFile = $_FILES['image']['name'];
+    if ($imageFile) {
+        $uploadDir = 'images/';
+        $imageExt = strtolower(pathinfo($imageFile, PATHINFO_EXTENSION));
+        $newImageName = time() . '_' . rand(1000, 9999) . '.' . $imageExt;
+        move_uploaded_file($_FILES['image']['tmp_name'], $uploadDir . $newImageName);
+        $query = "UPDATE products SET name='$name', image='$newImageName', category='$category', description='$description', price='$price' WHERE id=$id";
+    } else {
+        $query = "UPDATE products SET name='$name', category='$category', description='$description', price='$price' WHERE id=$id";
+    }
+
+    if (mysqli_query($conn, $query)) {
+        header("Location: admin.php?msg=Produit mis à jour !");
+        exit;
+    } else {
+        $error = "Erreur: " . mysqli_error($conn);
+    }
+}
+
+// 4. Handle Delete Product
+if (isset($_GET['delete_id']) && isAdminLoggedIn()) {
+    $id = intval($_GET['delete_id']);
+    // Optional: unlink image
+    $res = mysqli_query($conn, "SELECT image FROM products WHERE id=$id");
+    $row = mysqli_fetch_assoc($res);
+    if ($row && $row['image'] && file_exists('images/'.$row['image'])) {
+        unlink('images/'.$row['image']);
+    }
+    
+    mysqli_query($conn, "DELETE FROM products WHERE id=$id");
+    header("Location: admin.php?msg=Produit supprimé !");
+    exit;
+}
+
+// --- FETCH DATA FOR DASHBOARD ---
+$total_products = 0;
+$total_messages = 0;
+$products = [];
+
+if (isAdminLoggedIn()) {
+    $res = mysqli_query($conn, "SELECT COUNT(*) as count FROM products");
+    $total_products = mysqli_fetch_assoc($res)['count'];
+
+    $res = mysqli_query($conn, "SELECT COUNT(*) as count FROM contact_messages");
+    $total_messages = mysqli_fetch_assoc($res)['count'];
+
+    $res = mysqli_query($conn, "SELECT * FROM products ORDER BY id DESC");
+    while ($row = mysqli_fetch_assoc($res)) {
+        $products[] = $row;
+    }
+}
+
 ?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Le Café Local - Admin Panel</title>
+    <title>Admin Portal - M.A.Z Coffee House</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&family=Open+Sans:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="css/styles.css">
-    <!-- Reusing main CSS design + little admin-specific additions -->
-    <style>
-        :root {
-            --primary-color: #8B4513;
-            --secondary-color: #D4A76A;
-        }
-        .admin-section { padding: 40px 0; min-height: 80vh; }
-        .admin-card { background: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); margin-bottom: 40px; }
-        .admin-card h2 { color: var(--primary-color); margin-bottom: 25px; border-bottom: 2px solid var(--secondary-color); padding-bottom: 10px; }
-        .admin-table { width: 100%; border-collapse: collapse; margin-top: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
-        .admin-table th, .admin-table td { border: 1px solid #eee; padding: 15px; text-align: left; }
-        .admin-table th { background-color: var(--primary-color); color: white; font-weight: 600; text-transform: uppercase; font-size: 0.9rem; }
-        .admin-table tr:nth-child(even) { background-color: #fafafa; }
-        .admin-table tr:hover { background-color: #f5f5f5; }
-        .admin-table img { max-width: 80px; height: 80px; object-fit: cover; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        .btn { padding: 8px 15px; border: none; border-radius: 4px; cursor: pointer; text-decoration: none; color: white; display: inline-flex; align-items: center; gap: 5px; font-weight: 600; font-size: 0.9rem; transition: transform 0.2s, opacity 0.2s; }
-        .btn:hover { transform: translateY(-2px); opacity: 0.9; }
-        .btn-edit { background-color: #f39c12; }
-        .btn-delete { background-color: #e74c3c; }
-        .form-group { margin-bottom: 20px; }
-        .form-group label { display: block; margin-bottom: 8px; font-weight: 600; color: #444; }
-        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-family: inherit; font-size: 1rem; transition: border-color 0.3s; }
-        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: var(--secondary-color); box-shadow: 0 0 5px rgba(212, 167, 106, 0.3); }
-        .btn-submit { background-color: var(--primary-color); padding: 12px 25px; font-size: 1.1rem; margin-top: 10px; color: white !important; font-weight: 700; border-radius: 6px; border: none; cursor: pointer; transition: background-color 0.3s, transform 0.2s; }
-        .btn-submit:hover { background-color: #D2691E; transform: translateY(-2px); }
-        .message { padding: 15px; margin-bottom: 25px; border-radius: 6px; font-weight: 600; }
-        .success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
-        .error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
-    </style>
+    <link rel="stylesheet" href="css/styles.css?v=3.0">
 </head>
-<body>
-    <header class="header">
-        <div class="container">
-            <div class="logo">
-                <a href="index.php"><img src="img/M.A.Z.png" id="photo" alt="Logo M.A.Z Coffee House"></a>
-                <h1>Admin Panel</h1>
+<body class="<?php echo !isAdminLoggedIn() ? 'admin-login-body' : ''; ?>">
+
+    <?php if (!isAdminLoggedIn()): ?>
+        <!-- LOGIN VIEW -->
+        <div class="admin-login-wrapper">
+            <div class="admin-login-card">
+                <a href="index.php"><img src="img/M.A.Z.png" width="80" alt="Logo" style="margin-bottom: 20px;"></a>
+                <h2>Portail Admin</h2>
+                <?php if(isset($error)): ?>
+                    <p style="color: #e74c3c; margin-bottom: 20px; font-weight: 600;"><?php echo $error; ?></p>
+                <?php endif; ?>
+                <form action="admin.php" method="POST" class="drawer-form">
+                    <div class="form-group">
+                        <label>Email Administrateur</label>
+                        <input type="email" name="email" required placeholder="admin@maz.com">
+                    </div>
+                    <div class="form-group">
+                        <label>Mot de passe</label>
+                        <input type="password" name="password" required placeholder="••••••••">
+                    </div>
+                    <button type="submit" name="admin_login" class="btn-admin-add" style="width: 100%;">Se connecter</button>
+                </form>
+                <p style="margin-top: 20px;"><a href="index.php" style="color: #888; text-decoration: none;">Retour au site</a></p>
             </div>
-            <nav class="navbar">
-                <ul class="nav-links">
-                    <li><a href="index.php">Aller au Site</a></li>
-                    <li><a href="admin.php" class="active">Admin Dashboard</a></li>
-                </ul>
-            </nav>
         </div>
-    </header>
-
-    <main class="admin-section container">
-        
-        <?php
-        if (isset($_GET['msg'])) {
-            echo '<div class="message success">' . htmlspecialchars($_GET['msg']) . '</div>';
-        }
-        if (isset($_GET['err'])) {
-            echo '<div class="message error">' . htmlspecialchars($_GET['err']) . '</div>';
-        }
-        ?>
-
-        <!-- CREATE FORM -->
-        <div class="admin-card">
-            <h2>Ajouter un nouveau produit</h2>
-            <form action="insert.php" method="POST" enctype="multipart/form-data">
-                <div class="form-group">
-                    <label for="name">Nom du produit</label>
-                    <input type="text" name="name" id="name" required placeholder="Ex: Espresso">
+    <?php else: ?>
+        <!-- DASHBOARD VIEW -->
+        <header class="header">
+            <div class="container">
+                <div class="logo">
+                    <a href="index.php"><img src="img/M.A.Z.png" id="photo" alt="Logo"></a>
+                    <h1>Dashboard</h1>
                 </div>
+                <nav class="navbar">
+                    <div class="navbar-pill-toggle">
+                        <a href="index.php" style="padding: 8px 20px !important;">Aller au Site</a>
+                        <a href="logout.php" class="active" style="background-color: #e74c3c !important; padding: 8px 15px !important;"><i class="fas fa-sign-out-alt"></i></a>
+                    </div>
+                </nav>
+            </div>
+        </header>
+
+        <main class="container">
+            <div class="admin-dashboard-container">
+                <!-- Sidebar -->
+                <aside class="admin-sidebar">
+                    <a href="admin.php" class="admin-nav-item active">
+                        <i class="fas fa-th-large"></i> Dashboard
+                    </a>
+                    <a href="admin_messages.php" class="admin-nav-item">
+                        <i class="fas fa-envelope"></i> Messages
+                    </a>
+                    <a href="index.php" class="admin-nav-item">
+                        <i class="fas fa-external-link-alt"></i> Voir le Site
+                    </a>
+                    <hr style="border: none; border-top: 1px solid #eee; margin: 15px 0;">
+                    <a href="logout.php" class="admin-nav-item" style="color: #e74c3c;">
+                        <i class="fas fa-power-off"></i> Déconnexion
+                    </a>
+                </aside>
+
+                <!-- Main Content -->
+                <section class="admin-content">
+                    <?php if(isset($_GET['msg'])): ?>
+                        <div style="background: #d4edda; color: #155724; padding: 15px; border-radius: 12px; margin-bottom: 25px; font-weight: 600;">
+                            <i class="fas fa-check-circle"></i> <?php echo htmlspecialchars($_GET['msg']); ?>
+                        </div>
+                    <?php endif; ?>
+
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <span class="label">Produits</span>
+                            <span class="value"><?php echo $total_products; ?></span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="label">Messages</span>
+                            <span class="value"><?php echo $total_messages; ?></span>
+                        </div>
+                        <div class="stat-card" style="border-left-color: #4a90e2;">
+                            <span class="label">Visiteurs</span>
+                            <span class="value">Active</span>
+                        </div>
+                    </div>
+
+                    <div class="admin-main-card">
+                        <div class="admin-header-row">
+                            <h2>Gestion des Produits</h2>
+                            <button class="btn-admin-add" onclick="openDrawer('add')">
+                                <i class="fas fa-plus"></i> Ajouter un Produit
+                            </button>
+                        </div>
+
+                        <div class="premium-table-wrapper">
+                            <table class="premium-table">
+                                <thead>
+                                    <tr>
+                                        <th>Image</th>
+                                        <th>Détails</th>
+                                        <th>Catégorie</th>
+                                        <th>Prix</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php foreach ($products as $p): ?>
+                                    <tr>
+                                        <td>
+                                            <img src="images/<?php echo $p['image']; ?>" alt="" class="table-img" onerror="this.src='img/placeholder.png'">
+                                        </td>
+                                        <td>
+                                            <div class="prod-name"><?php echo htmlspecialchars($p['name']); ?></div>
+                                            <div style="font-size: 0.8rem; color: #999; max-width: 200px;"><?php echo htmlspecialchars(substr($p['description'], 0, 40)); ?>...</div>
+                                        </td>
+                                        <td><span class="prod-cat"><?php echo htmlspecialchars($p['category']); ?></span></td>
+                                        <td><span class="prod-price"><?php echo $p['price']; ?>€</span></td>
+                                        <td>
+                                            <div class="action-btns">
+                                                <button class="action-btn edit-btn" onclick='openDrawer("edit", <?php echo json_encode($p); ?>)'>
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                                <a href="admin.php?delete_id=<?php echo $p['id']; ?>" class="action-btn delete-btn" onclick="return confirm('Supprimer ce produit ?')">
+                                                    <i class="fas fa-trash"></i>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+
+        <!-- DRAWER OVERLAY -->
+        <div class="admin-form-overlay" id="formOverlay" onclick="closeDrawer()"></div>
+        <div class="admin-drawer" id="adminDrawer">
+            <div class="drawer-header">
+                <h3 id="drawerTitle">Ajouter un Produit</h3>
+                <span class="close-drawer" onclick="closeDrawer()">&times;</span>
+            </div>
+            
+            <form action="admin.php" method="POST" enctype="multipart/form-data" class="drawer-form">
+                <input type="hidden" name="id" id="form_id">
                 
                 <div class="form-group">
-                    <label for="category">Catégorie</label>
-                    <select name="category" id="category" required>
+                    <label>Nom du Produit</label>
+                    <input type="text" name="name" id="form_name" required placeholder="Ex: Espresso Double">
+                </div>
+
+                <div class="form-group">
+                    <label>Catégorie</label>
+                    <select name="category" id="form_category" required>
                         <option value="boissons-chaudes">Boissons chaudes</option>
                         <option value="boissons-froides">Boissons froides</option>
                         <option value="patisseries">Pâtisseries</option>
@@ -94,71 +281,88 @@ $result = mysqli_query($conn, $query);
                 </div>
 
                 <div class="form-group">
-                    <label for="price">Prix (€)</label>
-                    <input type="number" step="0.01" name="price" id="price" required placeholder="Ex: 2.50">
+                    <label>Prix (€)</label>
+                    <input type="number" step="0.01" name="price" id="form_price" required placeholder="2.50">
                 </div>
 
                 <div class="form-group">
-                    <label for="description">Description</label>
-                    <textarea name="description" id="description" rows="3" required placeholder="Un espresso classique et intense..."></textarea>
+                    <label>Description</label>
+                    <textarea name="description" id="form_description" rows="4" required placeholder="Décrivez le délice..."></textarea>
                 </div>
 
                 <div class="form-group">
-                    <label for="image">Image (Upload 1 fichier)</label>
-                    <input type="file" name="image" id="image" accept="image/*" required>
+                    <label>Image du Produit</label>
+                    <input type="file" name="image" accept="image/*" onchange="previewImage(this)">
+                    <img id="imagePreview" src="" class="drawer-preview-img" style="display: none;">
                 </div>
 
-                <button type="submit" name="submit" class="btn btn-submit">Ajouter le produit</button>
+                <div style="margin-top: 40px;">
+                    <button type="submit" id="submitBtn" name="add_product" class="btn-admin-add" style="width: 100%;">Enregistrer</button>
+                </div>
             </form>
         </div>
 
-        <!-- READ TABLE -->
-        <div class="admin-card">
-            <h2>Tous les produits</h2>
-            <?php if(mysqli_num_rows($result) > 0): ?>
-            <div style="overflow-x:auto;">
-                <table class="admin-table">
-                    <thead>
-                        <tr>
-                            <th>Image</th>
-                            <th>Nom</th>
-                            <th>Catégorie</th>
-                            <th>Prix (€)</th>
-                            <th>Description</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php while($row = mysqli_fetch_assoc($result)): ?>
-                        <tr>
-                            <td>
-                                <!-- On suppose que l'image est dans le dossier images/ -->
-                                <?php if($row['image']) echo '<img src="images/'.$row['image'].'" alt="'.htmlspecialchars($row['name']).'">'; ?>
-                            </td>
-                            <td><?php echo htmlspecialchars($row['name']); ?></td>
-                            <td><?php echo htmlspecialchars($row['category']); ?></td>
-                            <td><?php echo htmlspecialchars($row['price']); ?></td>
-                            <td><?php echo htmlspecialchars(substr($row['description'], 0, 50)) . '...'; ?></td>
-                            <td>
-                                <a href="update.php?id=<?php echo $row['id']; ?>" class="btn btn-edit"><i class="fas fa-edit"></i> Modifier</a>
-                                <a href="delete.php?id=<?php echo $row['id']; ?>" class="btn btn-delete" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce produit ?');"><i class="fas fa-trash"></i> Supprimer</a>
-                            </td>
-                        </tr>
-                        <?php endwhile; ?>
-                    </tbody>
-                </table>
-            </div>
-            <?php else: ?>
-                <p>Aucun produit trouvé dans la base de données.</p>
-            <?php endif; ?>
-        </div>
+        <script>
+            function openDrawer(mode, data = null) {
+                const drawer = document.getElementById('adminDrawer');
+                const overlay = document.getElementById('formOverlay');
+                const title = document.getElementById('drawerTitle');
+                const submitBtn = document.getElementById('submitBtn');
+                
+                // Clear form
+                document.getElementById('form_id').value = '';
+                document.getElementById('form_name').value = '';
+                document.getElementById('form_category').value = 'boissons-chaudes';
+                document.getElementById('form_price').value = '';
+                document.getElementById('form_description').value = '';
+                document.getElementById('imagePreview').style.display = 'none';
 
-    </main>
+                if (mode === 'edit' && data) {
+                    title.innerText = 'Modifier le Produit';
+                    submitBtn.name = 'update_product';
+                    submitBtn.innerText = 'Mettre à jour';
+                    
+                    document.getElementById('form_id').value = data.id;
+                    document.getElementById('form_name').value = data.name;
+                    document.getElementById('form_category').value = data.category;
+                    document.getElementById('form_price').value = data.price;
+                    document.getElementById('form_description').value = data.description;
+                    
+                    if (data.image) {
+                        const preview = document.getElementById('imagePreview');
+                        preview.src = 'images/' + data.image;
+                        preview.style.display = 'block';
+                    }
+                } else {
+                    title.innerText = 'Ajouter un Produit';
+                    submitBtn.name = 'add_product';
+                    submitBtn.innerText = 'Enregistrer';
+                }
 
-    <footer class="footer">
-        <div class="container copyright">
-            <p>&copy; 2025 M.A.Z Coffee House. Backend Admin Panel PHP.</p>
-        </div>
-    </footer>
+                drawer.classList.add('open');
+                overlay.classList.add('active');
+                document.body.classList.add('admin-overlay-active');
+            }
+
+            function closeDrawer() {
+                document.getElementById('adminDrawer').classList.remove('open');
+                document.getElementById('formOverlay').classList.remove('active');
+                document.body.classList.remove('admin-overlay-active');
+            }
+
+            function previewImage(input) {
+                if (input.files && input.files[0]) {
+                    var reader = new FileReader();
+                    reader.onload = function(e) {
+                        const preview = document.getElementById('imagePreview');
+                        preview.src = e.target.result;
+                        preview.style.display = 'block';
+                    }
+                    reader.readAsDataURL(input.files[0]);
+                }
+            }
+        </script>
+    <?php endif; ?>
+
 </body>
 </html>

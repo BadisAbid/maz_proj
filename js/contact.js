@@ -39,33 +39,50 @@ function initContactPage() {
 
         // Si le formulaire est valide
         if (isValid) {
-            // Simuler l'envoi du formulaire
+            // Envoi réel des données au serveur
             const submitBtn = contactForm.querySelector('.submit-btn');
             const originalText = submitBtn.textContent;
             submitBtn.textContent = 'Envoi en cours...';
             submitBtn.disabled = true;
 
-            setTimeout(() => {
-                // Afficher le message de succès
-                const successMessage = document.getElementById('success-message');
-                if (successMessage) {
-                    successMessage.style.display = 'block';
+            const formData = new FormData(contactForm);
+
+            fetch('save_message.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    // Afficher le message de succès
+                    const successMessage = document.getElementById('success-message');
+                    if (successMessage) {
+                        successMessage.textContent = data.message;
+                        successMessage.style.display = 'block';
+                    }
+
+                    // Réinitialiser le formulaire
+                    contactForm.reset();
+
+                    // Masquer le message de succès après 5 secondes
+                    setTimeout(() => {
+                        if (successMessage) {
+                            successMessage.style.display = 'none';
+                        }
+                    }, 5000);
+                } else {
+                    alert(data.message || 'Une erreur est survenue.');
                 }
-
-                // Réinitialiser le formulaire
-                contactForm.reset();
-
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Une erreur est survenue lors de l\'envoie du message.');
+            })
+            .finally(() => {
                 // Réactiver le bouton
                 submitBtn.textContent = originalText;
                 submitBtn.disabled = false;
-
-                // Masquer le message de succès après 5 secondes
-                setTimeout(() => {
-                    if (successMessage) {
-                        successMessage.style.display = 'none';
-                    }
-                }, 5000);
-            }, 1500);
+            });
         }
     });
 }
